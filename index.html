@@ -1,0 +1,2302 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPLDV Mastery — Latihan Adaptif Interaktif</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e1a;
+  --bg-2: #060912;
+  --surface: #131a2e;
+  --surface-2: #1a2240;
+  --surface-3: #232c4d;
+  --primary: #00f0a8;
+  --primary-2: #00c98a;
+  --accent: #ff8c42;
+  --accent-2: #ff6b1a;
+  --text: #e8ecf5;
+  --muted: #8b95b0;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --success: #00f0a8;
+  --error: #ff5566;
+  --warning: #ffb84d;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Sora', sans-serif;
+  margin: 0;
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(0, 240, 168, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 60%, rgba(255, 140, 66, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 50% 100%, rgba(0, 240, 168, 0.05) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+main, header, footer { position: relative; z-index: 1; }
+
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+.font-display { font-family: 'Sora', sans-serif; letter-spacing: -0.02em; }
+
+/* Glass card */
+.glass {
+  background: linear-gradient(135deg, rgba(26, 34, 64, 0.65), rgba(19, 26, 46, 0.45));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+.glass-strong {
+  background: linear-gradient(135deg, rgba(35, 44, 77, 0.85), rgba(26, 34, 64, 0.65));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-strong);
+  border-radius: 18px;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary) 0%, #5fffd1 50%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.gradient-text-warm {
+  background: linear-gradient(135deg, var(--accent) 0%, #ffb380 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  color: #0a0e1a;
+  font-weight: 700;
+  padding: 14px 28px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 24px rgba(0, 240, 168, 0.25), inset 0 1px 0 rgba(255,255,255,0.2);
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 240, 168, 0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.btn-primary:active { transform: translateY(0); }
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+.btn-primary:hover::before { transform: translateX(100%); }
+
+.btn-ghost {
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+  padding: 12px 22px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn-accent {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #0a0e1a;
+  font-weight: 700;
+  padding: 12px 22px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(255, 140, 66, 0.25);
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-accent:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255, 140, 66, 0.4); }
+
+/* Input */
+.input-field {
+  background: rgba(10, 14, 26, 0.7);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 12px;
+  padding: 14px 18px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.15rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: center;
+}
+.input-field:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(0, 240, 168, 0.12);
+  background: rgba(10, 14, 26, 0.9);
+}
+.input-field::placeholder { color: var(--muted); font-weight: 400; }
+
+/* Slider */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--primary);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(0, 240, 168, 0.6);
+  transition: transform 0.15s;
+}
+.slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+.slider.accent::-webkit-slider-thumb {
+  background: var(--accent);
+  box-shadow: 0 0 12px rgba(255, 140, 66, 0.6);
+}
+.slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: var(--primary);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+/* Skill bar */
+.skill-bar {
+  height: 10px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.skill-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), #5fffd1, var(--accent));
+  border-radius: 5px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  box-shadow: 0 0 16px rgba(0, 240, 168, 0.5);
+}
+.skill-bar-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmer 2.5s linear infinite;
+}
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+/* Equation display */
+.equation-box {
+  background: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.2));
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  padding: 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.5rem;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+}
+.equation-box::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--primary), var(--accent));
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(0, 240, 168, 0.4); }
+  100% { box-shadow: 0 0 0 20px rgba(0, 240, 168, 0); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes xp-float {
+  0% { opacity: 0; transform: translateY(0) scale(0.5); }
+  20% { opacity: 1; transform: translateY(-10px) scale(1); }
+  100% { opacity: 0; transform: translateY(-60px) scale(1.2); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(0, 240, 168, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(0, 240, 168, 0.6); }
+}
+@keyframes burst-particle {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+
+.animate-float { animation: float 5s ease-in-out infinite; }
+.animate-shake { animation: shake 0.5s ease-in-out; }
+.animate-fadeInUp { animation: fadeInUp 0.5s ease-out; }
+.animate-slideIn { animation: slideInRight 0.4s ease-out; }
+.animate-scaleIn { animation: scaleIn 0.3s ease-out; }
+.animate-glow { animation: glow-pulse 2s ease-in-out infinite; }
+
+/* Tier badges */
+.tier-pemula {
+  background: linear-gradient(135deg, #4a90e2, #357abd);
+  color: white;
+}
+.tier-menengah {
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  color: #0a0e1a;
+}
+.tier-mahir {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #0a0e1a;
+}
+
+/* Method card */
+.method-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.method-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(0, 240, 168, 0.05));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.method-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 240, 168, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 240, 168, 0.1);
+}
+.method-card:hover::before { opacity: 1; }
+
+/* Nav link */
+.nav-link {
+  position: relative;
+  color: var(--muted);
+  transition: color 0.2s;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+.nav-link:hover { color: var(--text); }
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: -6px;
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  transition: width 0.3s;
+}
+.nav-link:hover::after { width: 100%; }
+
+/* Hero canvas */
+#hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Streak fire */
+.streak-fire {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255, 140, 66, 0.15), rgba(255, 100, 50, 0.1));
+  border: 1px solid rgba(255, 140, 66, 0.3);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+/* Confetti */
+.confetti-piece {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* Tier transition */
+.tier-up-animation {
+  animation: pulse-ring 1s ease-out, fadeInUp 0.6s ease-out;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+/* Step indicator */
+.step-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  transition: all 0.3s;
+}
+.step-dot.active {
+  background: var(--primary);
+  box-shadow: 0 0 10px var(--primary);
+  transform: scale(1.2);
+}
+.step-dot.done { background: var(--primary-2); }
+
+/* Tab buttons */
+.tab-btn {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+.tab-btn.active {
+  background: rgba(0, 240, 168, 0.1);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.tab-btn:hover:not(.active) {
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+}
+
+/* Stat card */
+.stat-card {
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+  opacity: 0.08;
+  border-radius: 50%;
+  transform: translate(30px, -30px);
+}
+.stat-card.accent::before {
+  background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .equation-box { font-size: 1.15rem; padding: 18px; }
+  .btn-primary, .btn-ghost { padding: 12px 20px; font-size: 0.875rem; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl" style="background: rgba(10, 14, 26, 0.7); border-bottom: 1px solid var(--border);">
+  <nav class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="#" class="flex items-center gap-3 group">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center font-mono font-bold text-lg" style="background: linear-gradient(135deg, var(--primary), var(--accent)); color: #0a0e1a;">
+        Σ
+      </div>
+      <div>
+        <div class="font-display font-bold text-lg leading-none">SPLDV Mastery</div>
+        <div class="text-xs" style="color: var(--muted);">Latihan Adaptif Interaktif</div>
+      </div>
+    </a>
+    <div class="hidden md:flex items-center gap-8">
+      <a href="#materi" class="nav-link">Materi</a>
+      <a href="#latihan" class="nav-link">Latihan</a>
+      <a href="#statistik" class="nav-link">Statistik</a>
+      <a href="#tips" class="nav-link">Tips</a>
+    </div>
+    <div class="flex items-center gap-3">
+      <div id="nav-skill-badge" class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg" style="background: rgba(0,240,168,0.08); border: 1px solid rgba(0,240,168,0.2);">
+        <div class="w-2 h-2 rounded-full" style="background: var(--primary); box-shadow: 0 0 8px var(--primary);"></div>
+        <span class="text-xs font-mono font-semibold" id="nav-skill-text">30</span>
+      </div>
+      <a href="#latihan" class="btn-primary text-sm" style="padding: 10px 18px;">
+        Mulai Latihan
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </nav>
+</header>
+
+<!-- ============ HERO ============ -->
+<section id="hero" class="relative min-h-screen flex items-center justify-center pt-20 pb-12 overflow-hidden">
+  <canvas id="hero-canvas"></canvas>
+  
+  <div class="relative max-w-7xl mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center w-full">
+    <div class="lg:col-span-7 space-y-8">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium" style="background: rgba(0, 240, 168, 0.08); border: 1px solid rgba(0, 240, 168, 0.2); color: var(--primary);">
+        <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: var(--primary);"></span>
+        Sistem Pembelajaran Adaptif Generasi Baru
+      </div>
+      
+      <h1 class="font-display font-black leading-[0.95]" style="font-size: clamp(2.5rem, 6vw, 4.5rem);">
+        Kuasai <span class="gradient-text">SPLDV</span><br>
+        dengan Cara yang<br>
+        <span class="gradient-text-warm">Menyesuaikan</span> dirimu.
+      </h1>
+      
+      <p class="text-lg leading-relaxed max-w-xl" style="color: var(--muted);">
+        Sistem Persamaan Linear Dua Variabel tidak lagi rumit. Latihan kami mengikuti kemampuanmu secara real-time — bertambah sulit saat kau siap, dan memperlambat saat kau butuh waktu. Belajar matematika akhirnya terasa personal.
+      </p>
+      
+      <div class="flex flex-wrap items-center gap-4">
+        <a href="#latihan" class="btn-primary">
+          Mulai Latihan Adaptif
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#materi" class="btn-ghost">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Pelajari Materi
+        </a>
+      </div>
+      
+      <div class="grid grid-cols-3 gap-6 pt-8 max-w-md">
+        <div>
+          <div class="font-mono font-bold text-2xl gradient-text">15+</div>
+          <div class="text-xs" style="color: var(--muted);">Soal Adaptif</div>
+        </div>
+        <div>
+          <div class="font-mono font-bold text-2xl gradient-text">3</div>
+          <div class="text-xs" style="color: var(--muted);">Tingkat Kesulitan</div>
+        </div>
+        <div>
+          <div class="font-mono font-bold text-2xl gradient-text">100%</div>
+          <div class="text-xs" style="color: var(--muted);">Personal</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="lg:col-span-5">
+      <div class="glass-strong p-8 relative animate-float" style="border-radius: 24px;">
+        <div class="flex items-center justify-between mb-6">
+          <div class="text-xs font-medium" style="color: var(--muted);">PRATINJAU LATIHAN</div>
+          <div class="flex gap-1.5">
+            <div class="w-2 h-2 rounded-full" style="background: var(--error);"></div>
+            <div class="w-2 h-2 rounded-full" style="background: var(--warning);"></div>
+            <div class="w-2 h-2 rounded-full" style="background: var(--success);"></div>
+          </div>
+        </div>
+        
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="text-xs" style="color: var(--muted);">Tingkat Saat Ini</div>
+            <span class="px-2.5 py-1 rounded-md text-xs font-bold tier-menengah">MENENGAH</span>
+          </div>
+          
+          <div>
+            <div class="flex justify-between mb-2">
+              <span class="text-xs" style="color: var(--muted);">Skill</span>
+              <span class="text-xs font-mono font-bold">65/100</span>
+            </div>
+            <div class="skill-bar"><div class="skill-bar-fill" style="width: 65%;"></div></div>
+          </div>
+          
+          <div class="equation-box mt-4 space-y-2">
+            <div>2x + 3y = 7</div>
+            <div>3x + 2y = 8</div>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <div class="text-xs mb-1.5" style="color: var(--muted);">Nilai x</div>
+              <div class="input-field" style="padding: 10px;">2</div>
+            </div>
+            <div>
+              <div class="text-xs mb-1.5" style="color: var(--muted);">Nilai y</div>
+              <div class="input-field" style="padding: 10px; border-color: var(--success); color: var(--success);">1</div>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-2 pt-2 px-3 py-2.5 rounded-lg" style="background: rgba(0, 240, 168, 0.08); border: 1px solid rgba(0, 240, 168, 0.2);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--success);"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="text-sm font-medium" style="color: var(--success);">Benar! +14 XP · Streak 3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-60">
+    <div class="text-xs" style="color: var(--muted);">Gulir ke bawah</div>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--muted); animation: float 2s ease-in-out infinite;"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  </div>
+</section>
+
+<!-- ============ MATERI ============ -->
+<section id="materi" class="py-24 px-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16 space-y-4">
+      <div class="inline-block px-3 py-1 rounded-full text-xs font-medium" style="background: rgba(255, 140, 66, 0.08); border: 1px solid rgba(255, 140, 66, 0.2); color: var(--accent);">
+        TAHAP 1 — PAHAMI KONSEP
+      </div>
+      <h2 class="font-display font-bold text-4xl md:text-5xl">
+        Empat Metode Penyelesaian<br><span class="gradient-text">SPLDV</span>
+      </h2>
+      <p class="max-w-2xl mx-auto" style="color: var(--muted);">
+        Pilih metode yang paling nyaman bagimu. Setiap metode memiliki keunggulan masing-masing tergantung bentuk soal.
+      </p>
+    </div>
+    
+    <!-- Method tabs -->
+    <div class="flex flex-wrap justify-center gap-2 mb-10">
+      <button class="tab-btn active" data-method="substitusi">Substitusi</button>
+      <button class="tab-btn" data-method="eliminasi">Eliminasi</button>
+      <button class="tab-btn" data-method="grafik">Grafik</button>
+      <button class="tab-btn" data-method="campuran">Campuran</button>
+    </div>
+    
+    <!-- Method content -->
+    <div id="method-content" class="max-w-5xl mx-auto">
+      <!-- Diisi oleh JS -->
+    </div>
+    
+    <!-- Interactive Graph Visualization -->
+    <div class="mt-20 grid lg:grid-cols-5 gap-8 items-start">
+      <div class="lg:col-span-3 glass-strong p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="font-display font-bold text-xl">Visualisasi Grafik Interaktif</h3>
+            <p class="text-sm" style="color: var(--muted);">Ubah koefisien dan lihat titik potong secara real-time</p>
+          </div>
+          <button id="graph-reset" class="btn-ghost text-xs" style="padding: 6px 12px;">Reset</button>
+        </div>
+        <div class="relative">
+          <canvas id="graph-canvas" width="600" height="450" class="w-full" style="background: rgba(0,0,0,0.3); border-radius: 12px;"></canvas>
+        </div>
+        <div id="graph-solution" class="mt-4 p-3 rounded-lg font-mono text-sm text-center" style="background: rgba(0,0,0,0.3);">
+          Solusi: <span class="font-bold" style="color: var(--primary);">x = 2, y = 1</span>
+        </div>
+      </div>
+      
+      <div class="lg:col-span-2 glass-strong p-6 space-y-5">
+        <h3 class="font-display font-bold text-lg">Kontrol Koefisien</h3>
+        
+        <div class="space-y-4">
+          <div class="p-4 rounded-xl" style="background: rgba(0, 240, 168, 0.06); border: 1px solid rgba(0, 240, 168, 0.15);">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-sm font-bold" style="color: var(--primary);">Persamaan 1</span>
+              <span class="text-xs font-mono" id="eq1-display" style="color: var(--primary);">2x + 1y = 5</span>
+            </div>
+            <div class="space-y-3">
+              <div>
+                <div class="flex justify-between text-xs mb-1" style="color: var(--muted);"><span>a₁ (koef. x)</span><span class="font-mono font-bold" id="a1-val">2</span></div>
+                <input type="range" class="slider" id="a1" min="-5" max="5" value="2" step="1">
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1" style="color: var(--muted);"><span>b₁ (koef. y)</span><span class="font-mono font-bold" id="b1-val">1</span></div>
+                <input type="range" class="slider" id="b1" min="-5" max="5" value="1" step="1">
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1" style="color: var(--muted);"><span>c₁ (konstanta)</span><span class="font-mono font-bold" id="c1-val">5</span></div>
+                <input type="range" class="slider" id="c1" min="-10" max="10" value="5" step="1">
+              </div>
+            </div>
+          </div>
+          
+          <div class="p-4 rounded-xl" style="background: rgba(255, 140, 66, 0.06); border: 1px solid rgba(255, 140, 66, 0.15);">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-sm font-bold" style="color: var(--accent);">Persamaan 2</span>
+              <span class="text-xs font-mono" id="eq2-display" style="color: var(--accent);">1x + 1y = 3</span>
+            </div>
+            <div class="space-y-3">
+              <div>
+                <div class="flex justify-between text-xs mb-1" style="color: var(--muted);"><span>a₂ (koef. x)</span><span class="font-mono font-bold" id="a2-val">1</span></div>
+                <input type="range" class="slider accent" id="a2" min="-5" max="5" value="1" step="1">
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1" style="color: var(--muted);"><span>b₂ (koef. y)</span><span class="font-mono font-bold" id="b2-val">1</span></div>
+                <input type="range" class="slider accent" id="b2" min="-5" max="5" value="1" step="1">
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1" style="color: var(--muted);"><span>c₂ (konstanta)</span><span class="font-mono font-bold" id="c2-val">3</span></div>
+                <input type="range" class="slider accent" id="c2" min="-10" max="10" value="3" step="1">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LATIHAN ADAPTIF ============ -->
+<section id="latihan" class="py-24 px-6" style="background: linear-gradient(180deg, transparent, rgba(0, 240, 168, 0.02), transparent);">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12 space-y-4">
+      <div class="inline-block px-3 py-1 rounded-full text-xs font-medium" style="background: rgba(0, 240, 168, 0.08); border: 1px solid rgba(0, 240, 168, 0.2); color: var(--primary);">
+        TAHAP 2 — LATIHAN ADAPTIF
+      </div>
+      <h2 class="font-display font-bold text-4xl md:text-5xl">
+        Saatnya <span class="gradient-text">Berlatih</span>
+      </h2>
+      <p class="max-w-2xl mx-auto" style="color: var(--muted);">
+        Sistem akan menyesuaikan kesulitan berdasarkan jawabanmu. Semakin benar, semakin menantang. Semakin salah, semakin sabar.
+      </p>
+    </div>
+    
+    <div class="grid lg:grid-cols-3 gap-6">
+      <!-- Main quiz card -->
+      <div class="lg:col-span-2 glass-strong p-8" id="quiz-card">
+        <!-- Status bar -->
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <div class="flex items-center gap-3">
+            <div class="text-xs" style="color: var(--muted);">Soal</div>
+            <div class="font-mono font-bold text-2xl" id="question-number">#01</div>
+            <span class="px-2.5 py-1 rounded-md text-xs font-bold" id="tier-badge" style="background: rgba(0, 240, 168, 0.15); color: var(--primary);">PEMULA</span>
+          </div>
+          <div id="streak-display" class="streak-fire hidden">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 0c-.5 4-2.5 6-4 7 .5 1.5 2 2 3 1.5-1 3-3.5 4-5 4.5.5 3 2.5 4 5 4-1 0-2 .5-2.5 1 2 5 6 6 9 6-1-2-1.5-4-1-6 1-3 0-7-2-9-1.5 2-3 2.5-4 2 1-2 .5-4-1-5-1 .5-1.5 1.5-2 3 .5-4 .5-7-1-10z"/></svg>
+            <span id="streak-count">0</span>
+          </div>
+        </div>
+        
+        <!-- Context (if soal cerita) -->
+        <div id="question-context" class="mb-4 p-4 rounded-lg hidden" style="background: rgba(255, 140, 66, 0.06); border-left: 3px solid var(--accent);">
+          <div class="text-xs font-semibold mb-1" style="color: var(--accent);">SOAL CERITA</div>
+          <p class="text-sm leading-relaxed" id="context-text"></p>
+        </div>
+        
+        <!-- Equations -->
+        <div class="equation-box space-y-2 mb-6">
+          <div id="eq1-question">2x + y = 5</div>
+          <div id="eq2-question">x + y = 3</div>
+        </div>
+        
+        <!-- Input -->
+        <div class="space-y-4 mb-6">
+          <div class="text-sm font-medium" style="color: var(--muted);">Tentukan nilai x dan y:</div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs mb-2 block" style="color: var(--muted);">Nilai x</label>
+              <input type="number" id="answer-x" class="input-field" placeholder="?" step="any">
+            </div>
+            <div>
+              <label class="text-xs mb-2 block" style="color: var(--muted);">Nilai y</label>
+              <input type="number" id="answer-y" class="input-field" placeholder="?" step="any">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action buttons -->
+        <div class="flex flex-wrap gap-3 items-center">
+          <button id="submit-btn" class="btn-primary">
+            Periksa Jawaban
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+          <button id="hint-btn" class="btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.7.6 1 1.5 1 2.3v1h6v-1c0-.8.3-1.7 1-2.3A7 7 0 0 0 12 2z"/></svg>
+            Petunjuk
+          </button>
+          <button id="skip-btn" class="btn-ghost text-xs" style="margin-left: auto;">
+            Lewati
+          </button>
+        </div>
+        
+        <!-- Hint display -->
+        <div id="hint-display" class="mt-4 p-4 rounded-lg hidden animate-fadeInUp" style="background: rgba(255, 184, 77, 0.08); border: 1px solid rgba(255, 184, 77, 0.25);">
+          <div class="flex items-start gap-3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--warning); flex-shrink: 0; margin-top: 2px;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            <div>
+              <div class="text-xs font-bold mb-1" style="color: var(--warning);">PETUNJUK</div>
+              <p class="text-sm" id="hint-text" style="color: var(--text);"></p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Feedback -->
+        <div id="feedback-display" class="mt-4 hidden animate-fadeInUp">
+          <!-- Diisi oleh JS -->
+        </div>
+        
+        <!-- Next button -->
+        <div id="next-section" class="mt-4 hidden">
+          <button id="next-btn" class="btn-accent w-full justify-center">
+            Soal Berikutnya
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Side panel - Stats -->
+      <div class="space-y-4">
+        <!-- Skill card -->
+        <div class="glass p-5">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-medium" style="color: var(--muted);">SKILL LEVEL</span>
+            <span class="font-mono font-bold text-2xl" id="skill-value">30</span>
+          </div>
+          <div class="skill-bar mb-3">
+            <div class="skill-bar-fill" id="skill-bar-fill" style="width: 30%;"></div>
+          </div>
+          <div class="flex justify-between text-xs" style="color: var(--muted);">
+            <span>Pemula</span>
+            <span>Menengah</span>
+            <span>Mahir</span>
+          </div>
+        </div>
+        
+        <!-- Streak / Stats -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="glass p-4">
+            <div class="text-xs mb-1" style="color: var(--muted);">Streak</div>
+            <div class="font-mono font-bold text-2xl gradient-text-warm" id="current-streak">0</div>
+          </div>
+          <div class="glass p-4">
+            <div class="text-xs mb-1" style="color: var(--muted);">Terbaik</div>
+            <div class="font-mono font-bold text-2xl" id="best-streak">0</div>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-3">
+          <div class="glass p-4">
+            <div class="text-xs mb-1" style="color: var(--muted);">Benar</div>
+            <div class="font-mono font-bold text-2xl" style="color: var(--success);" id="correct-count">0</div>
+          </div>
+          <div class="glass p-4">
+            <div class="text-xs mb-1" style="color: var(--muted);">Salah</div>
+            <div class="font-mono font-bold text-2xl" style="color: var(--error);" id="wrong-count">0</div>
+          </div>
+        </div>
+        
+        <!-- Adaptive info -->
+        <div class="glass p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);"><path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-9-9 9 9 0 0 1 9-9c2.4 0 4.6.9 6.3 2.4M21 3v6h-6"/></svg>
+            <span class="text-xs font-semibold" style="color: var(--primary);">STATUS ADAPTIF</span>
+          </div>
+          <div class="space-y-2 text-xs" style="color: var(--muted);">
+            <div class="flex justify-between">
+              <span>Akurasi</span>
+              <span class="font-mono font-bold" style="color: var(--text);" id="accuracy-display">—</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Total Soal</span>
+              <span class="font-mono font-bold" style="color: var(--text);" id="total-display">0</span>
+            </div>
+            <div class="flex justify-between">
+              <span>XP Earned</span>
+              <span class="font-mono font-bold" style="color: var(--text);" id="xp-display">0</span>
+            </div>
+          </div>
+        </div>
+        
+        <button id="reset-btn" class="btn-ghost w-full justify-center text-xs">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 6.7 3M21 3v6h-6M21 12a9 9 0 0 1-9 9 9 9 0 0 1-6.7-3M3 21v-6h6"/></svg>
+          Reset Progress
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STATISTIK ============ -->
+<section id="statistik" class="py-24 px-6">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12 space-y-4">
+      <div class="inline-block px-3 py-1 rounded-full text-xs font-medium" style="background: rgba(255, 140, 66, 0.08); border: 1px solid rgba(255, 140, 66, 0.2); color: var(--accent);">
+        TAHAP 3 — PANTAU PERKEMBANGAN
+      </div>
+      <h2 class="font-display font-bold text-4xl md:text-5xl">
+        Statistik <span class="gradient-text">Pembelajaran</span>
+      </h2>
+      <p class="max-w-2xl mx-auto" style="color: var(--muted);">
+        Lihat bagaimana kemampuanmu berkembang seiring waktu. Setiap jawaban membentuk kurva belajarmu.
+      </p>
+    </div>
+    
+    <!-- Stat cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="glass p-5 stat-card">
+        <div class="text-xs mb-2" style="color: var(--muted);">Total Soal Dijawab</div>
+        <div class="font-mono font-bold text-3xl" id="stat-total">0</div>
+      </div>
+      <div class="glass p-5 stat-card">
+        <div class="text-xs mb-2" style="color: var(--muted);">Tingkat Akurasi</div>
+        <div class="font-mono font-bold text-3xl gradient-text" id="stat-accuracy">0%</div>
+      </div>
+      <div class="glass p-5 stat-card accent">
+        <div class="text-xs mb-2" style="color: var(--muted);">Streak Terbaik</div>
+        <div class="font-mono font-bold text-3xl gradient-text-warm" id="stat-best-streak">0</div>
+      </div>
+      <div class="glass p-5 stat-card">
+        <div class="text-xs mb-2" style="color: var(--muted);">Skill Saat Ini</div>
+        <div class="font-mono font-bold text-3xl" id="stat-skill">30</div>
+      </div>
+    </div>
+    
+    <!-- Chart -->
+    <div class="glass-strong p-6 mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="font-display font-bold text-lg">Progres Skill dari Waktu ke Waktu</h3>
+          <p class="text-xs" style="color: var(--muted);">Setiap titik merepresentasikan satu soal yang dijawab</p>
+        </div>
+        <div class="flex items-center gap-3 text-xs">
+          <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full" style="background: var(--primary);"></div><span style="color: var(--muted);">Skill</span></div>
+          <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full" style="background: var(--accent);"></div><span style="color: var(--muted);">Tier</span></div>
+        </div>
+      </div>
+      <div style="height: 280px;">
+        <canvas id="progress-chart"></canvas>
+      </div>
+    </div>
+    
+    <!-- Tier breakdown -->
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="glass p-5">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-bold px-2 py-1 rounded tier-pemula">PEMULA</span>
+          <span class="font-mono font-bold text-xl" id="tier-1-count">0</span>
+        </div>
+        <div class="text-xs" style="color: var(--muted);">Soal tier pemula yang dijawab</div>
+        <div class="mt-2 skill-bar"><div class="skill-bar-fill" id="tier-1-bar" style="width: 0%; background: linear-gradient(90deg, #4a90e2, #357abd);"></div></div>
+      </div>
+      <div class="glass p-5">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-bold px-2 py-1 rounded tier-menengah">MENENGAH</span>
+          <span class="font-mono font-bold text-xl" id="tier-2-count">0</span>
+        </div>
+        <div class="text-xs" style="color: var(--muted);">Soal tier menengah yang dijawab</div>
+        <div class="mt-2 skill-bar"><div class="skill-bar-fill" id="tier-2-bar" style="width: 0%;"></div></div>
+      </div>
+      <div class="glass p-5">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-bold px-2 py-1 rounded tier-mahir">MAHIR</span>
+          <span class="font-mono font-bold text-xl" id="tier-3-count">0</span>
+        </div>
+        <div class="text-xs" style="color: var(--muted);">Soal tier mahir yang dijawab</div>
+        <div class="mt-2 skill-bar"><div class="skill-bar-fill" id="tier-3-bar" style="width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-2));"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TIPS ============ -->
+<section id="tips" class="py-24 px-6">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12 space-y-4">
+      <div class="inline-block px-3 py-1 rounded-full text-xs font-medium" style="background: rgba(0, 240, 168, 0.08); border: 1px solid rgba(0, 240, 168, 0.2); color: var(--primary);">
+        TAHAP 4 — STRATEGI
+      </div>
+      <h2 class="font-display font-bold text-4xl md:text-5xl">
+        Strategi <span class="gradient-text">Penguasaan</span>
+      </h2>
+      <p class="max-w-2xl mx-auto" style="color: var(--muted);">
+        Prinsip-prinsip ini akan mempercepat pembelajaranmu.
+      </p>
+    </div>
+    
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div class="glass p-6 method-card">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background: rgba(0, 240, 168, 0.1); border: 1px solid rgba(0, 240, 168, 0.2);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <h3 class="font-display font-bold text-lg mb-2">Pilih Metode Tepat</h3>
+        <p class="text-sm" style="color: var(--muted);">Jika salah satu variabel sudah terisolasi, gunakan substitusi. Jika koefisien sama atau mudah disamakan, gunakan eliminasi.</p>
+      </div>
+      
+      <div class="glass p-6 method-card">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background: rgba(255, 140, 66, 0.1); border: 1px solid rgba(255, 140, 66, 0.2);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent);"><path d="M3 3v18h18M9 17l3-6 4 4 3-7"/></svg>
+        </div>
+        <h3 class="font-display font-bold text-lg mb-2">Visualisasikan dengan Grafik</h3>
+        <p class="text-sm" style="color: var(--muted);">Selalu bayangkan dua garis pada bidang kartesius. Solusi SPLDV adalah titik potong kedua garis tersebut.</p>
+      </div>
+      
+      <div class="glass p-6 method-card">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background: rgba(0, 240, 168, 0.1); border: 1px solid rgba(0, 240, 168, 0.2);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);"><path d="M12 2a10 10 0 1 0 10 10M12 6v6l4 2"/></svg>
+        </div>
+        <h3 class="font-display font-bold text-lg mb-2">Kelola Waktu</h3>
+        <p class="text-sm" style="color: var(--muted);">Soal SPLDV dasar selesai dalam 2-3 menit. Jika lebih dari 5 menit, baca ulang soal dan pertimbangkan metode lain.</p>
+      </div>
+      
+      <div class="glass p-6 method-card">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background: rgba(255, 140, 66, 0.1); border: 1px solid rgba(255, 140, 66, 0.2);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent);"><path d="M9 12l2 2 4-4M21 12c0 5-3.5 7.5-7.5 9-4-1.5-7.5-4-7.5-9V5l7.5-3 7.5 3v7z"/></svg>
+        </div>
+        <h3 class="font-display font-bold text-lg mb-2">Verifikasi Jawaban</h3>
+        <p class="text-sm" style="color: var(--muted);">Selalu substitusi nilai x dan y yang kamu dapat ke kedua persamaan asli. Jika keduanya terpenuhi, jawabanmu benar.</p>
+      </div>
+      
+      <div class="glass p-6 method-card">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background: rgba(0, 240, 168, 0.1); border: 1px solid rgba(0, 240, 168, 0.2);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+        </div>
+        <h3 class="font-display font-bold text-lg mb-2">Tulis dengan Rapi</h3>
+        <p class="text-sm" style="color: var(--muted);">SPLDV melibatkan banyak langkah. Tulis setiap langkah dengan jelas agar tidak ada kesalahan hitung yang merusak solusi.</p>
+      </div>
+      
+      <div class="glass p-6 method-card">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background: rgba(255, 140, 66, 0.1); border: 1px solid rgba(255, 140, 66, 0.2);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent);"><path d="M4 4h16v16H4zM4 9h16M9 9v11"/></svg>
+        </div>
+        <h3 class="font-display font-bold text-lg mb-2">Pahami Konteks Soal Cerita</h3>
+        <p class="text-sm" style="color: var(--muted);">Identifikasi variabel dari soal: "jumlah" = x + y, "selisih" = x − y, "dua kali" = 2x. Terjemahkan kata ke persamaan.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="py-12 px-6 border-t" style="border-color: var(--border);">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center font-mono font-bold text-lg" style="background: linear-gradient(135deg, var(--primary), var(--accent)); color: #0a0e1a;">Σ</div>
+        <div>
+          <div class="font-display font-bold">SPLDV Mastery</div>
+          <div class="text-xs" style="color: var(--muted);">Pembelajaran matematika yang menyesuaikan dirimu</div>
+        </div>
+      </div>
+      <div class="text-xs" style="color: var(--muted);">
+        Dibuat untuk para pembelajar matematika · 2024
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ====================== STATE ======================
+const state = {
+  skill: 30,
+  currentQuestion: null,
+  questionNumber: 0,
+  streak: 0,
+  bestStreak: 0,
+  correctCount: 0,
+  wrongCount: 0,
+  totalXP: 0,
+  answeredQuestions: [], // {id, correct, skillAfter, tier}
+  hintUsed: false,
+  currentTier: 1,
+  history: [], // untuk chart
+  tierCounts: { 1: 0, 2: 0, 3: 0 }
+};
+
+// ====================== BANK SOAL ======================
+const questions = [
+  // TIER 1 - PEMULA
+  {
+    id: 1, tier: 1,
+    eq1: "x + y = 5", eq2: "x − y = 1",
+    a1: 1, b1: 1, c1: 5, a2: 1, b2: -1, c2: 1,
+    answer: { x: 3, y: 2 },
+    hint: "Jumlahkan kedua persamaan untuk mengeliminasi variabel y.",
+    explanation: "Jumlahkan kedua persamaan: (x + y) + (x − y) = 5 + 1 → 2x = 6 → x = 3. Substitusi x = 3 ke persamaan pertama: 3 + y = 5 → y = 2. Verifikasi: 3 − 2 = 1 ✓"
+  },
+  {
+    id: 2, tier: 1,
+    eq1: "x + y = 7", eq2: "x − y = 3",
+    a1: 1, b1: 1, c1: 7, a2: 1, b2: -1, c2: 3,
+    answer: { x: 5, y: 2 },
+    hint: "Jumlahkan kedua persamaan — variabel y akan hilang.",
+    explanation: "Jumlahkan: (x + y) + (x − y) = 7 + 3 → 2x = 10 → x = 5. Substitusi: 5 + y = 7 → y = 2. Verifikasi: 5 − 2 = 3 ✓"
+  },
+  {
+    id: 3, tier: 1,
+    eq1: "2x + y = 5", eq2: "x + y = 3",
+    a1: 2, b1: 1, c1: 5, a2: 1, b2: 1, c2: 3,
+    answer: { x: 2, y: 1 },
+    hint: "Kurangi persamaan 1 dengan persamaan 2 untuk eliminasi y.",
+    explanation: "Kurangi: (2x + y) − (x + y) = 5 − 3 → x = 2. Substitusi: 2 + y = 3 → y = 1. Verifikasi: 2(2) + 1 = 5 ✓"
+  },
+  {
+    id: 4, tier: 1,
+    eq1: "x + 2y = 7", eq2: "x + y = 4",
+    a1: 1, b1: 2, c1: 7, a2: 1, b2: 1, c2: 4,
+    answer: { x: 1, y: 3 },
+    hint: "Kurangi persamaan 1 dengan persamaan 2 untuk eliminasi x.",
+    explanation: "Kurangi: (x + 2y) − (x + y) = 7 − 4 → y = 3. Substitusi: x + 3 = 4 → x = 1. Verifikasi: 1 + 2(3) = 7 ✓"
+  },
+  {
+    id: 5, tier: 1,
+    eq1: "2x + y = 9", eq2: "x − y = 3",
+    a1: 2, b1: 1, c1: 9, a2: 1, b2: -1, c2: 3,
+    answer: { x: 4, y: 1 },
+    hint: "Jumlahkan kedua persamaan untuk eliminasi y.",
+    explanation: "Jumlahkan: (2x + y) + (x − y) = 9 + 3 → 3x = 12 → x = 4. Substitusi: 4 − y = 3 → y = 1. Verifikasi: 2(4) + 1 = 9 ✓"
+  },
+  
+  // TIER 2 - MENENGAH
+  {
+    id: 6, tier: 2,
+    eq1: "2x + 3y = 8", eq2: "x + y = 3",
+    a1: 2, b1: 3, c1: 8, a2: 1, b2: 1, c2: 3,
+    answer: { x: 1, y: 2 },
+    hint: "Substitusi: dari persamaan 2, pernyataan x = 3 − y. Substitusikan ke persamaan 1.",
+    explanation: "Dari x + y = 3 → x = 3 − y. Substitusi: 2(3 − y) + 3y = 8 → 6 − 2y + 3y = 8 → y = 2. Maka x = 3 − 2 = 1. Verifikasi: 2(1) + 3(2) = 8 ✓"
+  },
+  {
+    id: 7, tier: 2,
+    eq1: "3x + 2y = 16", eq2: "2x + y = 9",
+    a1: 3, b1: 2, c1: 16, a2: 2, b2: 1, c2: 9,
+    answer: { x: 2, y: 5 },
+    hint: "Eliminasi: kalikan persamaan 2 dengan 2, lalu kurangi dari persamaan 1.",
+    explanation: "Persamaan 2 × 2: 4x + 2y = 18. Kurangi persamaan 1: (4x + 2y) − (3x + 2y) = 18 − 16 → x = 2. Substitusi: 2(2) + y = 9 → y = 5. Verifikasi: 3(2) + 2(5) = 16 ✓"
+  },
+  {
+    id: 8, tier: 2,
+    eq1: "2x + 3y = 7", eq2: "3x + 2y = 8",
+    a1: 2, b1: 3, c1: 7, a2: 3, b2: 2, c2: 8,
+    answer: { x: 2, y: 1 },
+    hint: "Eliminasi: kalikan persamaan 1 dengan 3 dan persamaan 2 dengan 2, lalu kurangkan.",
+    explanation: "Pers1 × 3: 6x + 9y = 21. Pers2 × 2: 6x + 4y = 16. Kurang: 5y = 5 → y = 1. Substitusi: 2x + 3 = 7 → x = 2. Verifikasi: 3(2) + 2(1) = 8 ✓"
+  },
+  {
+    id: 9, tier: 2,
+    eq1: "4x + y = 17", eq2: "2x + 3y = 21",
+    a1: 4, b1: 1, c1: 17, a2: 2, b2: 3, c2: 21,
+    answer: { x: 3, y: 5 },
+    hint: "Eliminasi: kalikan persamaan 2 dengan 2, lalu jumlahkan dengan persamaan 1.",
+    explanation: "Pers2 × 2: 4x + 6y = 42. Jumlahkan dengan pers1: (4x + y) + (4x + 6y) = 17 + 42 → tidak cocok. Seharusnya kurangi: (4x + 6y) − (4x + y) = 42 − 17 → 5y = 25 → y = 5. Substitusi: 4x + 5 = 17 → x = 3."
+  },
+  {
+    id: 10, tier: 2,
+    eq1: "5x − 2y = 4", eq2: "x + 2y = 8",
+    a1: 5, b1: -2, c1: 4, a2: 1, b2: 2, c2: 8,
+    answer: { x: 2, y: 3 },
+    hint: "Jumlahkan kedua persamaan — variabel y akan tereliminasi.",
+    explanation: "Jumlahkan: (5x − 2y) + (x + 2y) = 4 + 8 → 6x = 12 → x = 2. Substitusi: 2 + 2y = 8 → y = 3. Verifikasi: 5(2) − 2(3) = 4 ✓"
+  },
+  
+  // TIER 3 - MAHIR
+  {
+    id: 11, tier: 3,
+    eq1: "2x + 3y = 1", eq2: "x − 2y = −3",
+    a1: 2, b1: 3, c1: 1, a2: 1, b2: -2, c2: -3,
+    answer: { x: -1, y: 1 },
+    hint: "Substitusi: dari persamaan 2, x = 2y − 3. Substitusikan ke persamaan 1.",
+    explanation: "Dari x − 2y = −3 → x = 2y − 3. Substitusi: 2(2y − 3) + 3y = 1 → 4y − 6 + 3y = 1 → 7y = 7 → y = 1. Maka x = 2(1) − 3 = −1. Verifikasi: 2(−1) + 3(1) = 1 ✓",
+    context: "Sistem persamaan ini memiliki koefisien negatif. Perhatikan tanda saat substitusi."
+  },
+  {
+    id: 12, tier: 3,
+    eq1: "x + y = 25", eq2: "x − y = 7",
+    a1: 1, b1: 1, c1: 25, a2: 1, b2: -1, c2: 7,
+    answer: { x: 16, y: 9 },
+    hint: "Misal bilangan pertama = x, bilangan kedua = y. 'Jumlah' berarti x + y, 'selisih' berarti x − y.",
+    explanation: "Dari soal: x + y = 25 dan x − y = 7. Jumlahkan: 2x = 32 → x = 16. Maka y = 25 − 16 = 9. Verifikasi: 16 + 9 = 25 ✓ dan 16 − 9 = 7 ✓",
+    context: "Jumlah dua bilangan adalah 25 dan selisihnya 7. Tentukan kedua bilangan tersebut!"
+  },
+  {
+    id: 13, tier: 3,
+    eq1: "½x + ⅓y = 2", eq2: "x + y = 5",
+    a1: 0.5, b1: 1/3, c1: 2, a2: 1, b2: 1, c2: 5,
+    answer: { x: 2, y: 3 },
+    hint: "Dari persamaan 2, y = 5 − x. Substitusi ke persamaan 1, lalu kalikan dengan KPK 6 untuk menghilangkan pecahan.",
+    explanation: "y = 5 − x. Substitusi: ½x + ⅓(5 − x) = 2. Kalikan semua dengan 6: 3x + 2(5 − x) = 12 → 3x + 10 − 2x = 12 → x = 2. Maka y = 5 − 2 = 3. Verifikasi: ½(2) + ⅓(3) = 1 + 1 = 2 ✓",
+    context: "Selesaikan sistem persamaan dengan koefisien pecahan. Cari KPK penyebut untuk menyederhanakan."
+  },
+  {
+    id: 14, tier: 3,
+    eq1: "2x + 3y = 8500", eq2: "3x + 2y = 10000",
+    a1: 2, b1: 3, c1: 8500, a2: 3, b2: 2, c2: 10000,
+    answer: { x: 2600, y: 1100 },
+    hint: "Eliminasi: kalikan persamaan 1 dengan 3 dan persamaan 2 dengan 2, lalu kurangkan.",
+    explanation: "Pers1 × 3: 6x + 9y = 25500. Pers2 × 2: 6x + 4y = 20000. Kurangi: 5y = 5500 → y = 1100. Substitusi: 2x + 3(1100) = 8500 → 2x = 5200 → x = 2600. Harga apel Rp 2.600, jeruk Rp 1.100.",
+    context: "Harga 2 apel dan 3 jeruk adalah Rp 8.500. Harga 3 apel dan 2 jeruk adalah Rp 10.000. Tentukan harga masing-masing buah!"
+  },
+  {
+    id: 15, tier: 3,
+    eq1: "x + y = 13", eq2: "x − y = 5",
+    a1: 1, b1: 1, c1: 13, a2: 1, b2: -1, c2: 5,
+    answer: { x: 9, y: 4 },
+    hint: "Keliling persegi panjang = 2(p + l). Setengah keliling = p + l. Dari sini: p + l = 13 dan p − l = 5.",
+    explanation: "Keliling = 26 → p + l = 13. Diketahui p − l = 5. Jumlahkan: 2p = 18 → p = 9. Maka l = 13 − 9 = 4. Verifikasi: 2(9 + 4) = 26 ✓",
+    context: "Sebuah persegi panjang memiliki keliling 26 cm. Jika panjangnya 5 cm lebih panjang dari lebarnya, tentukan panjang dan lebar persegi panjang tersebut!"
+  }
+];
+
+// ====================== KONTEN METODE ======================
+const methodsData = {
+  substitusi: {
+    title: "Metode Substitusi",
+    desc: "Mengisolasi satu variabel lalu menggantikannya ke persamaan lain. Cocok saat salah satu variabel sudah hampir terisolasi.",
+    steps: [
+      { num: 1, text: "Pilih persamaan yang lebih sederhana, isolasi salah satu variabel (misal: dapatkan x = ... atau y = ...)." },
+      { num: 2, text: "Substitusikan bentuk tersebut ke persamaan yang lain, sehingga tinggal satu variabel." },
+      { num: 3, text: "Selesaikan persamaan satu variabel tadi untuk mendapatkan nilai numeriknya." },
+      { num: 4, text: "Substitusikan kembali nilai tersebut ke bentuk isolasi di langkah 1 untuk mendapatkan variabel kedua." },
+      { num: 5, text: "Verifikasi dengan substitusi ke kedua persamaan asli." }
+    ],
+    example: {
+      eq1: "2x + y = 7",
+      eq2: "x − y = 2",
+      steps: [
+        "Dari pers2: y = x − 2",
+        "Substitusi ke pers1: 2x + (x − 2) = 7",
+        "3x − 2 = 7 → 3x = 9 → x = 3",
+        "y = 3 − 2 = 1",
+        "Solusi: x = 3, y = 1"
+      ]
+    }
+  },
+  eliminasi: {
+    title: "Metode Eliminasi",
+    desc: "Menghilangkan salah satu variabel dengan menjumlahkan atau mengurangi kedua persamaan. Cocok saat koefisien variabel sama atau mudah disamakan.",
+    steps: [
+      { num: 1, text: "Pilih variabel yang akan dieliminasi (misal: y)." },
+      { num: 2, text: "Samakan nilai mutlak koefisien variabel tersebut pada kedua persamaan dengan mengalikan salah satu atau keduanya." },
+      { num: 3, text: "Jumlahkan (jika tandanya berbeda) atau kurangkan (jika tandanya sama) kedua persamaan." },
+      { num: 4, text: "Selesaikan persamaan satu variabel yang tersisa untuk mendapatkan nilainya." },
+      { num: 5, text: "Substitusikan nilai tersebut ke salah satu persamaan asli untuk mendapatkan variabel kedua." }
+    ],
+    example: {
+      eq1: "2x + 3y = 8",
+      eq2: "2x − y = 4",
+      steps: [
+        "Eliminasi x (koefisien sama, tanda berbeda di y)",
+        "Kurangi: (2x + 3y) − (2x − y) = 8 − 4",
+        "4y = 4 → y = 1",
+        "Substitusi: 2x + 3(1) = 8 → 2x = 5 → x = 2.5",
+        "Solusi: x = 5/2, y = 1"
+      ]
+    }
+  },
+  grafik: {
+    title: "Metode Grafik",
+    desc: "Menggambar kedua persamaan sebagai garis pada bidang kartesius. Titik potong kedua garis adalah solusi SPLDV.",
+    steps: [
+      { num: 1, text: "Ubah setiap persamaan ke bentuk y = mx + c (gradien-intersep)." },
+      { num: 2, text: "Tentukan dua titik yang dilalui setiap garis (biasanya perpotongan dengan sumbu x dan y)." },
+      { num: 3, text: "Gambar kedua garis pada sistem koordinat yang sama." },
+      { num: 4, text: "Identifikasi titik potong kedua garis — koordinatnya adalah solusi." },
+      { num: 5, text: "Verifikasi dengan substitusi nilai koordinat titik potong ke persamaan asli." }
+    ],
+    example: {
+      eq1: "x + y = 4",
+      eq2: "2x − y = 2",
+      steps: [
+        "y = 4 − x (garis 1)",
+        "y = 2x − 2 (garis 2)",
+        "Titik potong: 4 − x = 2x − 2",
+        "3x = 6 → x = 2, y = 2",
+        "Solusi: titik (2, 2)"
+      ]
+    }
+  },
+  campuran: {
+    title: "Metode Campuran",
+    desc: "Kombinasi substitusi dan eliminasi — gunakan keduanya secara fleksibel sesuai kebutuhan soal. Pendekatan paling efisien untuk soal kompleks.",
+    steps: [
+      { num: 1, text: "Analisis struktur kedua persamaan — mana koefisien yang mudah disamakan?" },
+      { num: 2, text: "Lakukan eliminasi parsial untuk mendapatkan satu variabel dalam bentuk sederhana." },
+      { num: 3, text: "Substitusikan bentuk tersebut ke persamaan lain, bukan nilai numerik." },
+      { num: 4, text: "Selesaikan persamaan yang tersisa." },
+      { num: 5, text: "Back-substitute untuk mendapatkan variabel kedua." }
+    ],
+    example: {
+      eq1: "3x + 2y = 12",
+      eq2: "x − y = 1",
+      steps: [
+        "Dari pers2: x = y + 1",
+        "Substitusi ke pers1: 3(y + 1) + 2y = 12",
+        "3y + 3 + 2y = 12 → 5y = 9 → y = 9/5",
+        "x = 9/5 + 1 = 14/5",
+        "Solusi: x = 14/5, y = 9/5"
+      ]
+    }
+  }
+};
+
+// ====================== ALGORITMA ADAPTIF ======================
+function getTier(skill) {
+  if (skill < 40) return 1;
+  if (skill < 70) return 2;
+  return 3;
+}
+
+function getTierName(tier) {
+  return { 1: 'PEMULA', 2: 'MENENGAH', 3: 'MAHIR' }[tier];
+}
+
+function getTierClass(tier) {
+  return { 1: 'tier-pemula', 2: 'tier-menengah', 3: 'tier-mahir' }[tier];
+}
+
+function selectNextQuestion() {
+  const currentTier = getTier(state.skill);
+  state.currentTier = currentTier;
+  
+  // Cari soal di tier saat ini yang belum dijawab
+  let available = questions.filter(q => 
+    q.tier === currentTier && 
+    !state.answeredQuestions.find(a => a.id === q.id && a.correct)
+  );
+  
+  // Jika semua soal di tier ini sudah dijawab benar, reset tracking untuk tier ini
+  if (available.length === 0) {
+    state.answeredQuestions = state.answeredQuestions.filter(a => {
+      const q = questions.find(qu => qu.id === a.id);
+      return q.tier !== currentTier;
+    });
+    available = questions.filter(q => q.tier === currentTier);
+  }
+  
+  // Jika masih kosong (tidak ada soal di tier), ambil dari tier terdekat
+  if (available.length === 0) {
+    available = questions.filter(q => 
+      !state.answeredQuestions.find(a => a.id === q.id && a.correct)
+    );
+  }
+  
+  if (available.length === 0) {
+    // Semua soal sudah dijawab benar, reset total
+    state.answeredQuestions = [];
+    available = questions.filter(q => q.tier === currentTier);
+  }
+  
+  // Pilih secara random, tapi hindari pengulangan soal terakhir
+  let pool = available.filter(q => q.id !== state.currentQuestion?.id);
+  if (pool.length === 0) pool = available;
+  
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function updateSkill(correct) {
+  const oldSkill = state.skill;
+  const oldTier = getTier(oldSkill);
+  
+  if (correct) {
+    const streakBonus = Math.min(state.streak * 2, 10);
+    const gain = 8 + streakBonus;
+    state.skill = Math.min(100, state.skill + gain);
+    state.totalXP += gain;
+    state.streak++;
+    state.bestStreak = Math.max(state.bestStreak, state.streak);
+    state.correctCount++;
+  } else {
+    state.skill = Math.max(0, state.skill - 7);
+    state.streak = 0;
+    state.wrongCount++;
+  }
+  
+  const newTier = getTier(state.skill);
+  
+  // Track tier changes
+  if (newTier > oldTier) {
+    showTierUp(newTier);
+  } else if (newTier < oldTier) {
+    showTierDown(newTier);
+  }
+  
+  // Record history
+  state.history.push({
+    questionNum: state.questionNumber,
+    skill: state.skill,
+    tier: newTier,
+    correct
+  });
+  
+  // Update tier count
+  state.tierCounts[state.currentQuestion.tier]++;
+}
+
+// ====================== UI UPDATES ======================
+function updateUI() {
+  // Skill display
+  document.getElementById('skill-value').textContent = Math.round(state.skill);
+  document.getElementById('skill-bar-fill').style.width = state.skill + '%';
+  document.getElementById('nav-skill-text').textContent = Math.round(state.skill);
+  
+  // Streak
+  document.getElementById('current-streak').textContent = state.streak;
+  document.getElementById('best-streak').textContent = state.bestStreak;
+  
+  const streakDisplay = document.getElementById('streak-display');
+  const streakCount = document.getElementById('streak-count');
+  if (state.streak >= 2) {
+    streakDisplay.classList.remove('hidden');
+    streakCount.textContent = state.streak;
+  } else {
+    streakDisplay.classList.add('hidden');
+  }
+  
+  // Correct/wrong counts
+  document.getElementById('correct-count').textContent = state.correctCount;
+  document.getElementById('wrong-count').textContent = state.wrongCount;
+  
+  // Stats panel
+  const total = state.correctCount + state.wrongCount;
+  const accuracy = total > 0 ? Math.round((state.correctCount / total) * 100) : 0;
+  document.getElementById('accuracy-display').textContent = total > 0 ? accuracy + '%' : '—';
+  document.getElementById('total-display').textContent = total;
+  document.getElementById('xp-display').textContent = state.totalXP;
+  
+  // Statistik section
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-accuracy').textContent = total > 0 ? accuracy + '%' : '0%';
+  document.getElementById('stat-best-streak').textContent = state.bestStreak;
+  document.getElementById('stat-skill').textContent = Math.round(state.skill);
+  
+  // Tier breakdown
+  for (let t = 1; t <= 3; t++) {
+    const count = state.tierCounts[t];
+    document.getElementById(`tier-${t}-count`).textContent = count;
+    const maxCount = questions.filter(q => q.tier === t).length;
+    // Allow multiple rounds, so show percentage based on 10+
+    const pct = Math.min(100, (count / Math.max(maxCount, 1)) * 100);
+    document.getElementById(`tier-${t}-bar`).style.width = pct + '%';
+  }
+  
+  // Update chart
+  updateChart();
+}
+
+function displayQuestion() {
+  state.currentQuestion = selectNextQuestion();
+  state.questionNumber++;
+  state.hintUsed = false;
+  
+  const q = state.currentQuestion;
+  
+  document.getElementById('question-number').textContent = '#' + String(state.questionNumber).padStart(2, '0');
+  
+  // Tier badge
+  const tierBadge = document.getElementById('tier-badge');
+  tierBadge.textContent = getTierName(q.tier);
+  tierBadge.className = 'px-2.5 py-1 rounded-md text-xs font-bold ' + getTierClass(q.tier);
+  
+  // Equations
+  document.getElementById('eq1-question').textContent = q.eq1;
+  document.getElementById('eq2-question').textContent = q.eq2;
+  
+  // Context (soal cerita)
+  const contextEl = document.getElementById('question-context');
+  if (q.context) {
+    contextEl.classList.remove('hidden');
+    document.getElementById('context-text').textContent = q.context;
+  } else {
+    contextEl.classList.add('hidden');
+  }
+  
+  // Clear inputs
+  document.getElementById('answer-x').value = '';
+  document.getElementById('answer-y').value = '';
+  
+  // Hide feedback, hint, next
+  document.getElementById('feedback-display').classList.add('hidden');
+  document.getElementById('hint-display').classList.add('hidden');
+  document.getElementById('next-section').classList.add('hidden');
+  document.getElementById('hint-btn').disabled = false;
+  document.getElementById('hint-btn').style.opacity = '1';
+  
+  // Enable submit, focus input
+  document.getElementById('submit-btn').disabled = false;
+  setTimeout(() => document.getElementById('answer-x').focus(), 100);
+}
+
+function checkAnswer() {
+  const xInput = document.getElementById('answer-x').value;
+  const yInput = document.getElementById('answer-y').value;
+  
+  if (xInput === '' || yInput === '') {
+    showFeedback('error', 'Mohon isi kedua nilai terlebih dahulu.', '');
+    return;
+  }
+  
+  const userX = parseFloat(xInput);
+  const userY = parseFloat(yInput);
+  
+  if (isNaN(userX) || isNaN(userY)) {
+    showFeedback('error', 'Masukkan angka yang valid.', '');
+    return;
+  }
+  
+  const correctX = state.currentQuestion.answer.x;
+  const correctY = state.currentQuestion.answer.y;
+  const tolerance = 0.01;
+  
+  const isCorrect = Math.abs(userX - correctX) < tolerance && Math.abs(userY - correctY) < tolerance;
+  
+  updateSkill(isCorrect);
+  
+  state.answeredQuestions.push({
+    id: state.currentQuestion.id,
+    correct: isCorrect,
+    skillAfter: state.skill
+  });
+  
+  if (isCorrect) {
+    showFeedback('success', 
+      `Benar! Solusi: x = ${correctX}, y = ${correctY}`,
+      state.currentQuestion.explanation
+    );
+    showXPIndicator();
+    if (state.streak >= 3) {
+      launchConfetti();
+    }
+  } else {
+    showFeedback('error',
+      `Belum tepat. Jawaban yang benar: x = ${correctX}, y = ${correctY}`,
+      state.currentQuestion.explanation
+    );
+    document.getElementById('quiz-card').classList.add('animate-shake');
+    setTimeout(() => document.getElementById('quiz-card').classList.remove('animate-shake'), 500);
+  }
+  
+  // Show next button
+  document.getElementById('next-section').classList.remove('hidden');
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('hint-btn').disabled = true;
+  document.getElementById('hint-btn').style.opacity = '0.5';
+  
+  updateUI();
+}
+
+function showFeedback(type, message, explanation) {
+  const el = document.getElementById('feedback-display');
+  el.classList.remove('hidden');
+  el.classList.add('animate-fadeInUp');
+  
+  const isSuccess = type === 'success';
+  const color = isSuccess ? 'var(--success)' : 'var(--error)';
+  const bg = isSuccess ? 'rgba(0, 240, 168, 0.08)' : 'rgba(255, 85, 102, 0.08)';
+  const border = isSuccess ? 'rgba(0, 240, 168, 0.25)' : 'rgba(255, 85, 102, 0.25)';
+  const icon = isSuccess 
+    ? '<polyline points="20 6 9 17 4 12"/>'
+    : '<circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/>';
+  
+  el.innerHTML = `
+    <div class="p-4 rounded-xl" style="background: ${bg}; border: 1px solid ${border};">
+      <div class="flex items-start gap-3">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: ${color}; flex-shrink: 0; margin-top: 2px;">${icon}</svg>
+        <div class="flex-1">
+          <div class="font-bold mb-2" style="color: ${color};">${message}</div>
+          ${explanation ? `<div class="text-sm leading-relaxed mt-2" style="color: var(--muted);">${explanation}</div>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function showHint() {
+  const el = document.getElementById('hint-display');
+  el.classList.remove('hidden');
+  document.getElementById('hint-text').textContent = state.currentQuestion.hint;
+  state.hintUsed = true;
+  // Streak bonus akan dikurangi tapi tidak menghentikan streak
+}
+
+function showXPIndicator() {
+  const streakBonus = Math.min((state.streak - 1) * 2, 10);
+  const gain = 8 + Math.max(0, streakBonus);
+  
+  const indicator = document.createElement('div');
+  indicator.style.cssText = `
+    position: absolute;
+    top: 100px;
+    right: 40px;
+    color: var(--primary);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 1.2rem;
+    pointer-events: none;
+    z-index: 100;
+    text-shadow: 0 0 10px rgba(0, 240, 168, 0.8);
+    animation: xp-float 1.5s ease-out forwards;
+  `;
+  indicator.textContent = `+${gain} XP`;
+  
+  document.getElementById('quiz-card').style.position = 'relative';
+  document.getElementById('quiz-card').appendChild(indicator);
+  
+  setTimeout(() => indicator.remove(), 1500);
+}
+
+function showTierUp(newTier) {
+  const messages = {
+    2: 'Naik ke tingkat MENENGAH! Soal akan lebih menantang.',
+    3: 'Luar biasa! Kamu mencapai tingkat MAHIR!'
+  };
+  
+  const notif = document.createElement('div');
+  notif.style.cssText = `
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, rgba(0, 240, 168, 0.15), rgba(255, 140, 66, 0.1));
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    z-index: 200;
+    box-shadow: 0 8px 32px rgba(0, 240, 168, 0.4);
+    backdrop-filter: blur(20px);
+    animation: fadeInUp 0.5s ease-out;
+  `;
+  notif.innerHTML = `
+    <div class="flex items-center gap-3">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      ${messages[newTier] || 'Tier meningkat!'}
+    </div>
+  `;
+  document.body.appendChild(notif);
+  
+  setTimeout(() => {
+    notif.style.opacity = '0';
+    notif.style.transform = 'translateX(-50%) translateY(-20px)';
+    notif.style.transition = 'all 0.5s';
+  }, 2500);
+  
+  setTimeout(() => notif.remove(), 3000);
+  
+  launchConfetti();
+}
+
+function showTierDown(newTier) {
+  const messages = {
+    1: 'Kamu turun ke tingkat PEMULA. Pelan-pelan, yang penting paham!',
+    2: 'Kamu turun ke tingkat MENENGAH. Ambil napas, coba lagi.'
+  };
+  
+  if (!messages[newTier]) return;
+  
+  const notif = document.createElement('div');
+  notif.style.cssText = `
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 140, 66, 0.1);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    z-index: 200;
+    backdrop-filter: blur(20px);
+    animation: fadeInUp 0.5s ease-out;
+  `;
+  notif.textContent = messages[newTier];
+  document.body.appendChild(notif);
+  
+  setTimeout(() => {
+    notif.style.opacity = '0';
+    notif.style.transition = 'opacity 0.5s';
+  }, 2500);
+  
+  setTimeout(() => notif.remove(), 3000);
+}
+
+// ====================== CONFETTI ======================
+function launchConfetti() {
+  const colors = ['#00f0a8', '#ff8c42', '#5fffd1', '#ffb380', '#ffffff'];
+  const card = document.getElementById('quiz-card');
+  const rect = card.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  
+  for (let i = 0; i < 40; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.cssText = `
+      left: ${centerX}px;
+      top: ${centerY}px;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+      --tx: ${(Math.random() - 0.5) * 400}px;
+      --ty: ${(Math.random() - 0.5) * 400 - 100}px;
+      animation: burst-particle ${0.8 + Math.random() * 0.4}s ease-out forwards;
+    `;
+    document.body.appendChild(piece);
+    setTimeout(() => piece.remove(), 1500);
+  }
+}
+
+// ====================== HERO CANVAS (Floating Equations) ======================
+function initHeroCanvas() {
+  const canvas = document.getElementById('hero-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width * devicePixelRatio;
+    canvas.height = rect.height * devicePixelRatio;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+  resize();
+  window.addEventListener('resize', () => {
+    canvas.width = canvas.width; // reset
+    resize();
+  });
+  
+  const equations = [
+    "x + y = 5", "2x − y = 3", "3x + 2y = 8", 
+    "x − y = 1", "2x + 3y = 7", "x + y = 7",
+    "5x − 2y = 4", "4x + y = 17", "2x + y = 9",
+    "x + 2y = 7", "3x − y = 6"
+  ];
+  
+  const particles = [];
+  const W = () => canvas.width / devicePixelRatio;
+  const H = () => canvas.height / devicePixelRatio;
+  
+  for (let i = 0; i < 22; i++) {
+    particles.push({
+      x: Math.random() * W(),
+      y: Math.random() * H(),
+      vx: (Math.random() - 0.5) * 0.2,
+      vy: -0.15 - Math.random() * 0.3,
+      text: equations[Math.floor(Math.random() * equations.length)],
+      size: 11 + Math.random() * 13,
+      opacity: 0.08 + Math.random() * 0.18,
+      color: Math.random() > 0.5 ? '0, 240, 168' : '255, 140, 66',
+      rotation: (Math.random() - 0.5) * 0.3
+    });
+  }
+  
+  function animate() {
+    ctx.clearRect(0, 0, W(), H());
+    
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      
+      if (p.y < -30) {
+        p.y = H() + 30;
+        p.x = Math.random() * W();
+      }
+      if (p.x < -100) p.x = W() + 100;
+      if (p.x > W() + 100) p.x = -100;
+      
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.font = `${p.size}px JetBrains Mono`;
+      ctx.fillStyle = `rgba(${p.color}, ${p.opacity})`;
+      ctx.fillText(p.text, 0, 0);
+      ctx.restore();
+    });
+    
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// ====================== INTERACTIVE GRAPH ======================
+const graphState = {
+  a1: 2, b1: 1, c1: 5,
+  a2: 1, b2: 1, c2: 3
+};
+
+function drawGraph() {
+  const canvas = document.getElementById('graph-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+  const cx = W / 2;
+  const cy = H / 2;
+  const scale = 30;
+  
+  ctx.clearRect(0, 0, W, H);
+  
+  // Grid
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+  ctx.lineWidth = 1;
+  for (let x = -12; x <= 12; x++) {
+    ctx.beginPath();
+    ctx.moveTo(cx + x * scale, 0);
+    ctx.lineTo(cx + x * scale, H);
+    ctx.stroke();
+  }
+  for (let y = -9; y <= 9; y++) {
+    ctx.beginPath();
+    ctx.moveTo(0, cy + y * scale);
+    ctx.lineTo(W, cy + y * scale);
+    ctx.stroke();
+  }
+  
+  // Major grid (every 5 units)
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+  ctx.lineWidth = 1;
+  for (let x = -10; x <= 10; x += 5) {
+    ctx.beginPath();
+    ctx.moveTo(cx + x * scale, 0);
+    ctx.lineTo(cx + x * scale, H);
+    ctx.stroke();
+  }
+  for (let y = -7; y <= 7; y += 5) {
+    ctx.beginPath();
+    ctx.moveTo(0, cy + y * scale);
+    ctx.lineTo(W, cy + y * scale);
+    ctx.stroke();
+  }
+  
+  // Axes
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(0, cy);
+  ctx.lineTo(W, cy);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx, 0);
+  ctx.lineTo(cx, H);
+  ctx.stroke();
+  
+  // Axis labels
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+  ctx.font = '11px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  for (let i = -9; i <= 9; i++) {
+    if (i !== 0) {
+      ctx.fillText(i, cx + i * scale, cy + 5);
+    }
+  }
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  for (let i = -7; i <= 7; i++) {
+    if (i !== 0) {
+      ctx.fillText(i, cx - 5, cy - i * scale);
+    }
+  }
+  // Origin
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'top';
+  ctx.fillText('0', cx - 5, cy + 5);
+  
+  // Axis labels
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+  ctx.font = 'bold 12px Sora';
+  ctx.textAlign = 'left';
+  ctx.fillText('x', W - 15, cy - 18);
+  ctx.fillText('y', cx + 8, 12);
+  
+  // Draw lines
+  function drawLine(a, b, c, color, glowColor) {
+    if (a === 0 && b === 0) return;
+    
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.shadowColor = glowColor;
+    ctx.shadowBlur = 12;
+    
+    if (b !== 0) {
+      // y = (c - ax) / b
+      const x1 = -12, x2 = 12;
+      const y1 = (c - a * x1) / b;
+      const y2 = (c - a * x2) / b;
+      ctx.beginPath();
+      ctx.moveTo(cx + x1 * scale, cy - y1 * scale);
+      ctx.lineTo(cx + x2 * scale, cy - y2 * scale);
+      ctx.stroke();
+    } else {
+      // Vertical line: x = c/a
+      const x = c / a;
+      ctx.beginPath();
+      ctx.moveTo(cx + x * scale, 0);
+      ctx.lineTo(cx + x * scale, H);
+      ctx.stroke();
+    }
+    ctx.shadowBlur = 0;
+  }
+  
+  drawLine(graphState.a1, graphState.b1, graphState.c1, '#00f0a8', 'rgba(0, 240, 168, 0.8)');
+  drawLine(graphState.a2, graphState.b2, graphState.c2, '#ff8c42', 'rgba(255, 140, 66, 0.8)');
+  
+  // Intersection point
+  const det = graphState.a1 * graphState.b2 - graphState.a2 * graphState.b1;
+  const solutionEl = document.getElementById('graph-solution');
+  
+  if (det !== 0) {
+    const x = (graphState.c1 * graphState.b2 - graphState.c2 * graphState.b1) / det;
+    const y = (graphState.a1 * graphState.c2 - graphState.a2 * graphState.c1) / det;
+    
+    // Check if point is within visible range
+    if (Math.abs(x) <= 10 && Math.abs(y) <= 7.5) {
+      // Glow circle
+      ctx.shadowColor = 'rgba(255, 255, 255, 0.9)';
+      ctx.shadowBlur = 20;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(cx + x * scale, cy - y * scale, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      
+      // Inner dot
+      ctx.fillStyle = '#0a0e1a';
+      ctx.beginPath();
+      ctx.arc(cx + x * scale, cy - y * scale, 3, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Label
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 13px JetBrains Mono';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'bottom';
+      const labelX = cx + x * scale + 12;
+      const labelY = cy - y * scale - 10;
+      ctx.fillText(`(${formatNum(x)}, ${formatNum(y)})`, labelX, labelY);
+      
+      solutionEl.innerHTML = `Solusi: <span class="font-bold" style="color: var(--primary);">x = ${formatNum(x)}, y = ${formatNum(y)}</span>`;
+    } else {
+      solutionEl.innerHTML = `<span style="color: var(--warning);">Solusi di luar rentang tampilan: (${formatNum(x)}, ${formatNum(y)})</span>`;
+    }
+  } else {
+    // Check if same line or parallel
+    if (graphState.a1 * graphState.c2 === graphState.a2 * graphState.c1 && 
+        graphState.b1 * graphState.c2 === graphState.b2 * graphState.c1) {
+      solutionEl.innerHTML = `<span style="color: var(--primary);">Kedua garis berhimpitan — tak hingga solusi</span>`;
+    } else {
+      solutionEl.innerHTML = `<span style="color: var(--error);">Kedua garis sejajar — tidak ada solusi</span>`;
+    }
+  }
+}
+
+function formatNum(n) {
+  if (Math.abs(n) < 0.001) return '0';
+  if (Number.isInteger(n)) return n.toString();
+  return (Math.round(n * 100) / 100).toString();
+}
+
+function updateGraphState() {
+  graphState.a1 = parseInt(document.getElementById('a1').value);
+  graphState.b1 = parseInt(document.getElementById('b1').value);
+  graphState.c1 = parseInt(document.getElementById('c1').value);
+  graphState.a2 = parseInt(document.getElementById('a2').value);
+  graphState.b2 = parseInt(document.getElementById('b2').value);
+  graphState.c2 = parseInt(document.getElementById('c2').value);
+  
+  document.getElementById('a1-val').textContent = graphState.a1;
+  document.getElementById('b1-val').textContent = graphState.b1;
+  document.getElementById('c1-val').textContent = graphState.c1;
+  document.getElementById('a2-val').textContent = graphState.a2;
+  document.getElementById('b2-val').textContent = graphState.b2;
+  document.getElementById('c2-val').textContent = graphState.c2;
+  
+  // Update equation displays
+  const fmtTerm = (coef, varName, isFirst) => {
+    if (coef === 0) return '';
+    const sign = coef < 0 ? '−' : (isFirst ? '' : '+');
+    const absVal = Math.abs(coef);
+    const valStr = absVal === 1 ? varName : `${absVal}${varName}`;
+    return `${isFirst ? sign : sign + ' '}${valStr}`;
+  };
+  
+  const buildEq = (a, b, c) => {
+    let parts = [];
+    if (a !== 0) parts.push(fmtTerm(a, 'x', true));
+    if (b !== 0) parts.push(fmtTerm(b, 'y', parts.length === 0));
+    if (parts.length === 0) parts.push('0');
+    return parts.join(' ') + ' = ' + c;
+  };
+  
+  document.getElementById('eq1-display').textContent = buildEq(graphState.a1, graphState.b1, graphState.c1);
+  document.getElementById('eq2-display').textContent = buildEq(graphState.a2, graphState.b2, graphState.c2);
+  
+  drawGraph();
+}
+
+// ====================== METODE TABS ======================
+function showMethod(method) {
+  const data = methodsData[method];
+  const content = document.getElementById('method-content');
+  
+  content.innerHTML = `
+    <div class="grid lg:grid-cols-2 gap-8 animate-fadeInUp">
+      <div class="glass-strong p-8">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center font-mono font-bold text-xl" style="background: linear-gradient(135deg, rgba(0,240,168,0.15), rgba(255,140,66,0.15)); border: 1px solid var(--border-strong); color: var(--primary);">
+            ${method.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <h3 class="font-display font-bold text-2xl">${data.title}</h3>
+            <p class="text-sm" style="color: var(--muted);">${data.desc}</p>
+          </div>
+        </div>
+        
+        <div class="mt-6 space-y-3">
+          <div class="text-xs font-bold uppercase tracking-wider" style="color: var(--primary);">Langkah-langkah</div>
+          ${data.steps.map(s => `
+            <div class="flex gap-3">
+              <div class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center font-mono font-bold text-sm" style="background: rgba(0, 240, 168, 0.1); border: 1px solid rgba(0, 240, 168, 0.3); color: var(--primary);">${s.num}</div>
+              <p class="text-sm leading-relaxed pt-0.5" style="color: var(--text);">${s.text}</p>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      
+      <div class="glass-strong p-8">
+        <div class="text-xs font-bold uppercase tracking-wider mb-4" style="color: var(--accent);">Contoh Penerapan</div>
+        
+        <div class="equation-box space-y-2 mb-5">
+          <div>${data.example.eq1}</div>
+          <div>${data.example.eq2}</div>
+        </div>
+        
+        <div class="space-y-2">
+          ${data.example.steps.map((s, i) => `
+            <div class="flex gap-3 p-3 rounded-lg" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border);">
+              <span class="font-mono font-bold text-sm flex-shrink-0" style="color: var(--accent);">${i + 1}.</span>
+              <span class="text-sm font-mono" style="color: var(--text);">${s}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Update active tab
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.method === method);
+  });
+}
+
+// ====================== CHART ======================
+let chart = null;
+
+function initChart() {
+  const ctx = document.getElementById('progress-chart').getContext('2d');
+  
+  // Gradient for skill line
+  const gradient1 = ctx.createLinearGradient(0, 0, 0, 280);
+  gradient1.addColorStop(0, 'rgba(0, 240, 168, 0.4)');
+  gradient1.addColorStop(1, 'rgba(0, 240, 168, 0)');
+  
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Mulai'],
+      datasets: [
+        {
+          label: 'Skill',
+          data: [30],
+          borderColor: '#00f0a8',
+          backgroundColor: gradient1,
+          borderWidth: 2.5,
+          fill: true,
+          tension: 0.35,
+          pointBackgroundColor: '#00f0a8',
+          pointBorderColor: '#0a0e1a',
+          pointBorderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          yAxisID: 'y'
+        },
+        {
+          label: 'Tier',
+          data: [1],
+          borderColor: '#ff8c42',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          borderDash: [5, 5],
+          fill: false,
+          tension: 0,
+          stepped: true,
+          pointBackgroundColor: '#ff8c42',
+          pointBorderColor: '#0a0e1a',
+          pointBorderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          yAxisID: 'y1'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(10, 14, 26, 0.95)',
+          titleColor: '#e8ecf5',
+          bodyColor: '#e8ecf5',
+          borderColor: 'rgba(255,255,255,0.1)',
+          borderWidth: 1,
+          padding: 12,
+          displayColors: true,
+          callbacks: {
+            label: function(ctx) {
+              if (ctx.dataset.label === 'Tier') {
+                return 'Tier: ' + getTierName(ctx.parsed.y);
+              }
+              return 'Skill: ' + ctx.parsed.y;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: { color: '#8b95b0', font: { family: 'JetBrains Mono', size: 10 } }
+        },
+        y: {
+          position: 'left',
+          min: 0,
+          max: 100,
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: { color: '#00f0a8', font: { family: 'JetBrains Mono', size: 10 } },
+          title: { display: true, text: 'Skill', color: '#00f0a8', font: { family: 'Sora', size: 11 } }
+        },
+        y1: {
+          position: 'right',
+          min: 0,
+          max: 4,
+          grid: { display: false },
+          ticks: {
+            color: '#ff8c42',
+            font: { family: 'JetBrains Mono', size: 10 },
+            stepSize: 1,
+            callback: (v) => v === 0 ? '' : (v === 1 ? 'Pemula' : v === 2 ? 'Menengah' : v === 3 ? 'Mahir' : '')
+          },
+          title: { display: true, text: 'Tier', color: '#ff8c42', font: { family: 'Sora', size: 11 } }
+        }
+      }
+    }
+  });
+}
+
+function updateChart() {
+  if (!chart) return;
+  
+  const labels = ['Mulai', ...state.history.map((_, i) => '#' + (i + 1))];
+  const skillData = [30, ...state.history.map(h => h.skill)];
+  const tierData = [1, ...state.history.map(h => h.tier)];
+  
+  chart.data.labels = labels;
+  chart.data.datasets[0].data = skillData;
+  chart.data.datasets[1].data = tierData;
+  chart.update('none');
+}
+
+// ====================== RESET ======================
+function resetProgress() {
+  state.skill = 30;
+  state.currentQuestion = null;
+  state.questionNumber = 0;
+  state.streak = 0;
+  state.bestStreak = 0;
+  state.correctCount = 0;
+  state.wrongCount = 0;
+  state.totalXP = 0;
+  state.answeredQuestions = [];
+  state.hintUsed = false;
+  state.currentTier = 1;
+  state.history = [];
+  state.tierCounts = { 1: 0, 2: 0, 3: 0 };
+  
+  displayQuestion();
+  updateUI();
+  
+  // Show notification
+  const notif = document.createElement('div');
+  notif.style.cssText = `
+    position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+    background: rgba(0, 240, 168, 0.1); border: 1px solid var(--primary);
+    color: var(--primary); padding: 12px 20px; border-radius: 12px;
+    font-weight: 600; z-index: 200; backdrop-filter: blur(20px);
+    animation: fadeInUp 0.5s ease-out;
+  `;
+  notif.textContent = 'Progress direset. Memulai dari awal.';
+  document.body.appendChild(notif);
+  setTimeout(() => notif.remove(), 2500);
+}
+
+// ====================== INITIALIZATION ======================
+function init() {
+  // Init hero canvas
+  initHeroCanvas();
+  
+  // Init graph
+  ['a1', 'b1', 'c1', 'a2', 'b2', 'c2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updateGraphState);
+  });
+  
+  document.getElementById('graph-reset')?.addEventListener('click', () => {
+    document.getElementById('a1').value = 2;
+    document.getElementById('b1').value = 1;
+    document.getElementById('c1').value = 5;
+    document.getElementById('a2').value = 1;
+    document.getElementById('b2').value = 1;
+    document.getElementById('c2').value = 3;
+    updateGraphState();
+  });
+  
+  drawGraph();
+  updateGraphState();
+  
+  // Init method tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => showMethod(btn.dataset.method));
+  });
+  showMethod('substitusi');
+  
+  // Init chart
+  initChart();
+  
+  // Init quiz
+  displayQuestion();
+  updateUI();
+  
+  // Event listeners
+  document.getElementById('submit-btn').addEventListener('click', checkAnswer);
+  document.getElementById('hint-btn').addEventListener('click', showHint);
+  document.getElementById('next-btn').addEventListener('click', displayQuestion);
+  document.getElementById('skip-btn').addEventListener('click', () => {
+    state.streak = 0;
+    displayQuestion();
+    updateUI();
+  });
+  document.getElementById('reset-btn').addEventListener('click', resetProgress);
+  
+  // Enter key to submit
+  ['answer-x', 'answer-y'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        if (!document.getElementById('next-section').classList.contains('hidden')) {
+          displayQuestion();
+        } else {
+          checkAnswer();
+        }
+      }
+    });
+  });
+  
+  // Smooth scroll for nav links
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+}
+
+// Start when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+</body>
+</html>i
